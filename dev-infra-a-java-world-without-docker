@@ -1,0 +1,116 @@
+cloud-architecture-diagram
+
+direction right
+
+
+// Define Java App in Dev
+JavaDevInfra{
+    HostOS{
+        IntelliJIDE{
+            Project{
+                ProjectSDK{
+                    Project-JVM[icon:java]
+                }
+                Code{
+                    EmbeddedTomcat{
+                        SpringMVC{
+                            JavaApp[icon:java]
+                            H2[icon:database]
+                        }
+                    }
+                }
+            }
+        }
+
+        Build[icon:java]{
+            EmbeddedTomcatBuild{
+                SpringMVCBuild{
+                    JavaAppBuild[icon:java]
+                    H2Build[icon:database]
+                }
+            }
+        }
+        Maven[icon:maven]
+        Git[icon:git]
+        WebBrowser[icon:firefox]
+        HostJDK{
+            HostJVM[icon:java]
+        }
+    }
+}
+
+// Define connections
+WebBrowser -> EmbeddedTomcatBuild : HTTP-8080
+HostJDK - Build
+Maven -> Project
+Maven -> Build
+Git - Code
+ProjectSDK - Code
+H2 - JavaApp
+H2Build - JavaAppBuild
+
+//Define Github Infra
+Github{
+    Repo[icon:github]
+    CICD[icon:github]{
+        H2CICD[icon:database]
+        JDKCICD[icon:java]
+        MAVENCICD[icon:maven]
+    }
+    Release[icon:java]
+
+}
+
+//Define connections
+Repo -> CICD -> Release
+Git -> Github : 22-SSH 443-HTTPS
+CICD - H2CICD
+CICD - JDKCICD
+
+//Define Integration Infa
+
+// Define groups and nodes
+Region (eu-south-1) [icon: aws-region]{
+    InternetGateway[icon:aws-internet-gateway]
+    Vpc[icon: aws-vpc]{
+
+        //DMZ
+        PublicSubnet[color: green]{
+            //Compute
+            SshSrv[icon: aws-ec2]
+            NatSrv[icon: aws-ec2]
+            RProxySrv[icon: aws-ec2]
+
+            //Routing
+            RouterPublic[icon: aws-vpc-router]
+        }
+
+        //Private subnet
+        PrivateSubnet[color: red]{
+            Debian[icon:debian]{
+                Tomcat [icon:tomcat]{
+                    ReleaseDebian[icon:java]
+                    H2Debian[icon:database]
+                }
+                JRE[icon:java]{
+                    JVM[icon:java]
+                }
+            }
+            //Routing
+            RouterPrivate[icon: aws-vpc-router]
+        }
+    }
+}
+
+// Define connection
+// Public Subnet -> both sides rules
+
+// Public Subnet -> outbounds rules
+NatSrv -> InternetGateway
+SshSrv -> Debian : SSH-22
+RProxySrv -> Tomcat : HTTP 8080
+InternetGateway -> SshSrv : SSH-22
+InternetGateway -> RProxySrv : HTTPS-443
+Release -> InternetGateway
+Tomcat - JRE
+ReleaseDebian - H2Debian
