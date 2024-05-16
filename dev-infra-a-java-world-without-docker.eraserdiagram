@@ -2,13 +2,12 @@ cloud-architecture-diagram
 
 direction right
 
-
 // Define Java App in Dev
 JavaDevInfra{
     HostOS{
         IntelliJIDE{
             Project{
-                ProjectSDK{
+                ProjectJDK{
                     Project-JVM[icon:java]
                 }
                 Code{
@@ -16,6 +15,7 @@ JavaDevInfra{
                         SpringMVC{
                             JavaApp[icon:java]
                             H2[icon:database]
+                            MVN[icon:maven]
                         }
                     }
                 }
@@ -45,27 +45,27 @@ HostJDK - Build
 Maven -> Project
 Maven -> Build
 Git - Code
-ProjectSDK - Code
+ProjectJDK - Code
 H2 - JavaApp
 H2Build - JavaAppBuild
 
 //Define Github Infra
 Github{
     Repo[icon:github]
-    CICD[icon:github]{
-        H2CICD[icon:database]
-        JDKCICD[icon:java]
-        MAVENCICD[icon:maven]
+    CDCD[icon:github]{
+        H2CDCD[icon:database]
+        JDKCDCD[icon:java]
+        MVNCDCD[icon:maven]
     }
     Release[icon:java]
 
 }
 
 //Define connections
-Repo -> CICD -> Release
+Repo -> CDCD -> Release
 Git -> Github : 22-SSH 443-HTTPS
-CICD - H2CICD
-CICD - JDKCICD
+CDCD - H2CDCD
+CDCD - JDKCDCD
 
 //Define Integration Infa
 
@@ -114,3 +114,4 @@ InternetGateway -> RProxySrv : HTTPS-443
 Release -> InternetGateway
 Tomcat - JRE
 ReleaseDebian - H2Debian
+WebBrowser -> RProxySrv : HTTPS-443
